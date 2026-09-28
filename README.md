@@ -1,101 +1,226 @@
-# Komorebi — Interactive Culinary Archive + AI Mood Matcher
+# Komorebi
 
-A responsive React/Vite website with two distinct experiences:
+### Interactive Culinary Archive & AI-Driven Mood Matcher
 
-1. **Interactive Culinary Archive** — searchable film-inspired recipes, automatic serving scaling, distraction-free cook mode, favorites, and Supabase-backed recipe data.
-2. **AI-Driven Mood Matcher** — natural-language mood prompts that return a film, comforting scene, soundtrack, and explanation. The production path uses a Supabase Edge Function so the AI key never ships to the browser.
+**Komorebi** is a calm, Ghibli-inspired web experience that combines food, film, music, and personalized recommendations in one application. The project is designed around two independent features: an interactive digital cookbook for recreating memorable animated dishes and an AI-powered mood matcher that recommends a film, comforting scene, and soundtrack based on how the user feels.
 
-The visual direction adapts a calm, nature-led, card-based aesthetic with misty blues, sage greens, warm earth tones, rounded surfaces, and soft motion. It is an original implementation rather than a pixel-for-pixel copy of the design reference.
+The interface follows a soft, nature-centered visual direction with spacious layouts, muted greens and blues, rounded cards, gentle transitions, and a distraction-free experience.
 
-## Stack
+---
 
-- React 18 + Vite
-- React Router
-- Supabase Auth + Postgres + Row Level Security
-- Supabase Edge Functions
-- Lucide React icons
-- Plain responsive CSS (no Tailwind required)
+## Core Experiences
 
-## Quick start
+### Interactive Culinary Archive
 
-```bash
-npm install
-cp .env.example .env
-npm run dev
+A database-backed digital cookbook dedicated to recreating memorable food inspired by animated films.
+
+Users can:
+
+- Browse and search a growing recipe collection.
+- View ingredients, preparation steps, cooking time, difficulty, and serving information.
+- Automatically scale ingredient quantities when the serving size changes.
+- Enter **Cook Mode** for a cleaner, distraction-free recipe view.
+- Save favorite recipes to a personal collection.
+- Access saved content from an authenticated profile.
+- Continue using built-in recipe data when the database is unavailable.
+
+Examples of recipe concepts include bacon and eggs inspired by *Howl's Moving Castle* and ramen inspired by *Ponyo*.
+
+### AI-Driven Mood Matcher
+
+A natural-language recommendation experience designed to connect a user's current mood or situation with a comforting film experience.
+
+Users can describe how they feel in their own words, such as:
+
+> “I feel tired after a long week and want something peaceful.”
+
+The Mood Matcher can return:
+
+- A recommended film.
+- A specific comforting scene or moment.
+- A matching soundtrack suggestion.
+- A short explanation of why the recommendation fits the prompt.
+
+AI requests are designed to pass through a **Supabase Edge Function**, keeping private AI credentials outside the browser. A local fallback recommendation system is also included so the feature can still present results when the AI service is unavailable.
+
+---
+
+## Main Features
+
+- Responsive home page with two clearly separated experiences.
+- Shared navigation across the Culinary Archive and Mood Matcher.
+- Recipe search and browsing.
+- Dynamic ingredient scaling.
+- Distraction-free cooking mode.
+- Favorite recipe collection.
+- User authentication and personal profiles.
+- AI-assisted mood recommendations.
+- Mood recommendation history for authenticated users.
+- Supabase-backed data storage.
+- Row Level Security for user-specific information.
+- Responsive layouts for desktop, tablet, and mobile screens.
+
+---
+
+## Technology Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 18 |
+| Build Tool | Vite |
+| Routing | React Router |
+| Styling | Responsive CSS |
+| Icons | Lucide React |
+| Backend Services | Supabase |
+| Database | PostgreSQL through Supabase |
+| Authentication | Supabase Auth |
+| Security | Supabase Row Level Security |
+| Server-side Logic | Supabase Edge Functions |
+| AI Integration | AI model accessed through the Mood Matcher Edge Function |
+| Deployment | Vercel-ready frontend |
+
+---
+
+## Application Structure
+
+```text
+Komorebi
+│
+├── Home
+│   ├── Culinary Archive introduction
+│   └── Mood Matcher introduction
+│
+├── Culinary Archive
+│   ├── Recipe browser
+│   ├── Recipe details
+│   ├── Ingredient scaler
+│   ├── Cook Mode
+│   └── Favorites
+│
+├── AI Mood Matcher
+│   ├── Natural-language mood prompt
+│   ├── Film recommendation
+│   ├── Scene recommendation
+│   ├── Soundtrack recommendation
+│   └── Recommendation history
+│
+└── User Account
+    ├── Authentication
+    ├── Profile
+    └── Saved content
 ```
 
-The app works immediately in **demo mode** even without Supabase. Recipes come from `src/data/recipes.js`, favorites use `localStorage`, and the Mood Matcher uses a small built-in fallback recommender.
+---
 
-## Connect Supabase
+## Supabase Integration
 
-1. Create a Supabase project.
-2. Open SQL Editor and run `supabase/migrations/001_schema.sql`.
-3. Then run `supabase/seed.sql`.
-4. Copy `.env.example` to `.env` and fill in:
+Supabase acts as the application's backend platform and is responsible for persistent application data and authenticated user features.
+
+The project uses the following main tables:
+
+| Table | Purpose |
+| --- | --- |
+| `profiles` | Stores application profile information linked to authenticated users. |
+| `recipes` | Stores recipe information used by the Culinary Archive. |
+| `favorites` | Connects users with recipes they have saved. |
+| `mood_history` | Stores previous Mood Matcher results for authenticated users. |
+
+Public recipe data can be read by visitors, while profile information, favorites, and mood history are protected using **Row Level Security** so each user can access only their own private records.
+
+---
+
+## AI Architecture
+
+```text
+User Mood Prompt
+      │
+      ▼
+React / Vite Frontend
+      │
+      ▼
+Supabase Edge Function
+      │
+      ▼
+AI Model
+      │
+      ▼
+Film + Scene + Soundtrack Recommendation
+      │
+      ▼
+Optional Mood History in Supabase
+```
+
+The AI credential is kept server-side through Supabase Edge Function secrets rather than being exposed in frontend code.
+
+---
+
+## Main Routes
+
+| Route | Page |
+| --- | --- |
+| `/` | Home |
+| `/archive` | Interactive Culinary Archive |
+| `/archive/:slug` | Recipe Details and Cook Mode |
+| `/mood` | AI-Driven Mood Matcher |
+| `/favorites` | Saved Recipes |
+| `/profile` | User Profile and Mood History |
+
+---
+
+## Project Directory
+
+```text
+src/
+├── components/        Reusable interface components
+├── context/           Authentication state
+├── data/              Local fallback recipe data
+├── lib/               Supabase client configuration
+├── pages/             Main application pages
+├── utils/             Shared helper functions
+├── App.jsx             Application routes
+├── main.jsx            React entry point
+└── styles.css          Main visual system and responsive styles
+
+supabase/
+├── functions/
+│   └── mood-match/     AI recommendation Edge Function
+├── migrations/         Database schema
+└── seed.sql             Initial recipe data
+```
+
+---
+
+## Environment Variables
+
+The Vercel frontend uses the public Supabase project credentials:
 
 ```env
-VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
 ```
 
-5. Restart the Vite dev server.
+The Supabase anonymous key is intended for client-side use together with correctly configured Row Level Security policies. Privileged credentials such as a Supabase `service_role` key or an AI provider secret must never be exposed through `VITE_*` variables.
 
-### Authentication
+The AI provider credential is stored separately as a **Supabase Edge Function secret**.
 
-The navigation bar contains a Sign in button. The included modal supports email/password sign-in and sign-up through Supabase Auth.
+---
 
-If email confirmation is enabled in your Supabase project, newly registered users must confirm their email before signing in.
+## Design Direction
 
-## Deploy the AI Mood Matcher Edge Function
+Komorebi is designed to feel warm, calm, and restorative rather than like a conventional database application. Its interface combines soft landscape-inspired colors, generous spacing, rounded surfaces, subtle depth, and focused content areas to support both leisurely browsing and practical cooking.
 
-Install the Supabase CLI, log in, and link your project. Then:
+The visual direction is inspired by calm editorial and wellness-oriented web design while remaining an original interface implementation.
 
-```bash
-supabase functions deploy mood-match
-supabase secrets set OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-# Optional: choose another supported text model
-supabase secrets set OPENAI_MODEL=gpt-5.6-luna
-```
+---
 
-The frontend calls:
+## Project Goal
 
-```js
-supabase.functions.invoke('mood-match', { body: { prompt } })
-```
+The project explores how an interactive web application can turn the emotional qualities of animated films into two useful digital experiences: **food that users can recreate** and **media recommendations that respond to how users feel**.
 
-If the Edge Function is unavailable, the UI gracefully falls back to the built-in recommendation logic.
+By combining a structured culinary database with natural-language AI recommendations, Komorebi aims to create a personal comfort space where users can discover a meal, a film, a scene, or a soundtrack that fits the moment.
 
-> Important: never put `OPENAI_API_KEY` in the Vite `.env` file. Vite variables are delivered to the browser. Keep the AI key only in Supabase Edge Function secrets.
+---
 
-## Main routes
+## Disclaimer
 
-- `/` — shared homepage
-- `/archive` — Interactive Culinary Archive
-- `/archive/:slug` — recipe detail, serving scaler, cook mode
-- `/mood` — AI Mood Matcher
-- `/favorites` — saved recipe collection
-- `/profile` — signed-in user profile and mood history
-
-## Database tables
-
-- `profiles`
-- `recipes`
-- `favorites`
-- `mood_history`
-
-Row Level Security policies allow public recipe reading while keeping favorites, profile data, and mood history private to each authenticated user.
-
-## Build for production
-
-```bash
-npm run build
-npm run preview
-```
-
-Deploy the generated `dist/` folder to Vercel, Netlify, Cloudflare Pages, or another static host. Remember to configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in your deployment environment.
-
-## Notes
-
-- Recipe quantities are automatically scaled from each recipe's `base_servings` value.
-- Cook Mode uses the browser Wake Lock API when available to reduce accidental screen sleeping while cooking.
-- All scenic artwork in the UI is built from CSS shapes/gradients and emoji, so the starter does not depend on copyrighted film stills.
+Komorebi is an independent fan-inspired academic/project concept. Studio Ghibli, its films, characters, music, and related trademarks belong to their respective rights holders. This project is not affiliated with or endorsed by Studio Ghibli.
